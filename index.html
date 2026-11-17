@@ -1,2 +1,133 @@
-# Nossa-tabela.-
-Tabela compartilhada  de casamento 
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nossa Tabela ❤️</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 20px;
+  background: #101827;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+.container {
+  max-width: 650px;
+  margin: auto;
+  text-align: center;
+}
+h1 { color: #ff789a; }
+.subtitle { color: #cbd5e1; }
+.info {
+  background: #1e293b;
+  padding: 16px;
+  border-radius: 14px;
+  margin: 20px 0;
+}
+.total {
+  font-size: 28px;
+  color: #ff8eaa;
+  font-weight: bold;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 9px;
+}
+.number {
+  padding: 14px 3px;
+  border: 1px solid #475569;
+  border-radius: 9px;
+  background: #253449;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.number.selected {
+  background: #16865b;
+  border-color: #36d399;
+}
+button:active { transform: scale(.96); }
+.reset {
+  margin: 22px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #e05b78;
+  color: white;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>❤️ Nossa Tabela ❤️</h1>
+<p class="subtitle">Nossa caminhada até o casamento</p>
+
+<div class="info">
+  <p>Números escolhidos</p>
+  <div class="total" id="count">0 / 283</div>
+  <p>Total acumulado: <strong id="sum">R$ 0,00</strong></p>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<button class="reset" onclick="resetTable()">Limpar tabela</button>
+</div>
+
+<script>
+const grid = document.getElementById("grid");
+let selected = JSON.parse(localStorage.getItem("casamento") || "[]");
+
+function money(value) {
+  return value.toLocaleString("pt-BR", {
+    style: "currency", currency: "BRL"
+  });
+}
+
+function update() {
+  document.getElementById("count").textContent =
+    selected.length + " / 283";
+
+  const total = selected.reduce((a,b) => a+b, 0);
+  document.getElementById("sum").textContent = money(total);
+
+  localStorage.setItem("casamento", JSON.stringify(selected));
+
+  document.querySelectorAll(".number").forEach(button => {
+    const n = Number(button.dataset.number);
+    button.classList.toggle("selected", selected.includes(n));
+  });
+}
+
+for (let i = 1; i <= 283; i++) {
+  const button = document.createElement("button");
+  button.className = "number";
+  button.textContent = i;
+  button.dataset.number = i;
+
+  button.onclick = () => {
+    if (selected.includes(i)) {
+      selected = selected.filter(n => n !== i);
+    } else {
+      selected.push(i);
+    }
+    update();
+  };
+
+  grid.appendChild(button);
+}
+
+function resetTable() {
+  if (confirm("Deseja apagar todas as marcações?")) {
+    selected = [];
+    update();
+  }
+}
+
+update();
+</script>
+</body>
+</html>
